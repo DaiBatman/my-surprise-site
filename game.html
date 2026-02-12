@@ -2,35 +2,29 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Heart Game!</title>
+  <title>Catch Game!</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       font-family: sans-serif;
-      text-align: center;
+      background: #fff0f6;
     }
 
-    #score {
+    #score, #timer {
       position: fixed;
       top: 10px;
-      left: 10px;
       font-size: 24px;
       font-weight: bold;
     }
 
-    #timer {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      font-size: 24px;
-      font-weight: bold;
-    }
+    #score { left: 10px; }
+    #timer { right: 10px; }
 
+    /* 落ちてくるアイテム */
     .item {
       position: fixed;
       font-size: 40px;
-      cursor: pointer;
       animation: fall 3s linear forwards;
     }
 
@@ -40,6 +34,16 @@
         opacity: 0;
       }
     }
+
+    /* キャッチャー（👐） */
+    #catcher {
+      position: fixed;
+      bottom: 20px;
+      font-size: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: left 0.1s linear;
+    }
   </style>
 </head>
 <body>
@@ -47,49 +51,74 @@
   <div id="score">Score: 0</div>
   <div id="timer">Time: 15</div>
 
+  <!-- キャッチャー -->
+  <div id="catcher">👐</div>
+
   <script>
     let score = 0;
     let timeLeft = 15;
+    const catcher = document.getElementById("catcher");
+
+    // スマホの左右タップで移動
+    document.addEventListener("touchstart", (e) => {
+      const x = e.touches[0].clientX;
+      catcher.style.left = x + "px";
+    });
+
+    // PC用（マウス移動）
+    document.addEventListener("mousemove", (e) => {
+      catcher.style.left = e.clientX + "px";
+    });
 
     function createItem() {
-      const item = document.createElement('div');
-      item.className = 'item';
+      const item = document.createElement("div");
+      item.className = "item";
 
-      // 爆弾30%、ハート70%
       const isBomb = Math.random() < 0.3;
-      item.textContent = isBomb ? '💣' : '❤️';
+      item.textContent = isBomb ? "💣" : "❤️";
 
-      item.style.left = Math.random() * 90 + 'vw';
-      item.style.top = '-40px';
-
-      item.onclick = () => {
-        if (isBomb) {
-          score -= 1;
-        } else {
-          score += 1;
-        }
-        document.getElementById('score').textContent = 'Score: ' + score;
-        item.remove();
-      };
+      item.style.left = Math.random() * 90 + "vw";
+      item.style.top = "-40px";
 
       document.body.appendChild(item);
-      setTimeout(() => item.remove(), 3000);
+
+      const fallInterval = setInterval(() => {
+        const itemRect = item.getBoundingClientRect();
+        const catcherRect = catcher.getBoundingClientRect();
+
+        // キャッチ判定
+        if (
+          itemRect.bottom >= catcherRect.top &&
+          itemRect.left < catcherRect.right &&
+          itemRect.right > catcherRect.left
+        ) {
+          if (isBomb) score -= 1;
+          else score += 1;
+
+          document.getElementById("score").textContent = "Score: " + score;
+
+          item.remove();
+          clearInterval(fallInterval);
+        }
+      }, 50);
+
+      setTimeout(() => {
+        item.remove();
+        clearInterval(fallInterval);
+      }, 3000);
     }
 
-    // ハート/爆弾を落とす
     const itemInterval = setInterval(createItem, 700);
 
-    // タイマー
     const timerInterval = setInterval(() => {
       timeLeft--;
-      document.getElementById('timer').textContent = 'Time: ' + timeLeft;
+      document.getElementById("timer").textContent = "Time: " + timeLeft;
 
       if (timeLeft <= 0) {
         clearInterval(itemInterval);
         clearInterval(timerInterval);
 
-        // スコアを次のページへ渡す
-        location.href = 'result.html?score=' + score;
+        location.href = "result.html?score=" + score;
       }
     }, 1000);
   </script>
