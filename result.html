@@ -51,12 +51,40 @@
       from { transform: translateY(100vh); }
       to { transform: translateY(-10vh); }
     }
+
+    /* ボタン共通デザイン */
+    .btn {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff66aa;
+      color: white;
+      cursor: pointer;
+      animation: fadeIn 1.5s ease;
+      width: 260px;
+    }
+
+    .btn:hover {
+      background-color: #ff5599;
+    }
   </style>
 </head>
 <body>
 
   <h1>ゲーム結果だよ！</h1>
   <h2 id="score"></h2>
+
+  <!-- 再挑戦ボタン -->
+  <button class="btn" onclick="location.href='game.html'">
+    もう一回挑戦する！
+  </button>
+
+  <!-- ゲーム選択画面に戻るボタン -->
+  <button class="btn" onclick="location.href='index.html'">
+    ゲーム選択画面に戻る
+  </button>
 
   <script>
     // URL から score を取得
@@ -79,28 +107,6 @@
 
     setInterval(createHeart, 500);
   </script>
-<!-- 再挑戦ボタン -->
-<button id="retry" onclick="location.href='game.html'">
-  もう一回挑戦する！
-</button>
-
-<style>
-  #retry {
-    margin-top: 40px;
-    padding: 12px 24px;
-    font-size: 20px;
-    border: none;
-    border-radius: 10px;
-    background-color: #ff66aa;
-    color: white;
-    cursor: pointer;
-    animation: fadeIn 1.5s ease;
-  }
-
-  #retry:hover {
-    background-color: #ff5599;
-  }
-</style>
 
 </body>
 </html>
