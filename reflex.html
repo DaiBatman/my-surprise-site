@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Reflex Game!</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffe6f2, #ffd6e8);
+      font-family: "Hiragino Maru Gothic ProN", sans-serif;
+      text-align: center;
+      user-select: none;
+      transition: background 0.3s ease;
+      overflow: hidden;
+    }
+
+    /* 背景アニメーション */
+    .bg-heart {
+      position: fixed;
+      font-size: 30px;
+      opacity: 0.4;
+      animation: floatUp 6s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh); }
+      to { transform: translateY(-10vh); }
+    }
+
+    #message {
+      font-size: 50px;
+      color: #ff4d88;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="message">準備してね…</div>
+
+  <script>
+    let startTime = 0;
+    let ready = false;
+
+    // 背景ハートをふわふわ
+    function createHeart() {
+      const h = document.createElement("div");
+      h.className = "bg-heart";
+      h.textContent = "❤️";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.bottom = "-20px";
+      h.style.fontSize = (Math.random() * 20 + 20) + "px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 6000);
+    }
+    setInterval(createHeart, 400);
+
+    // ランダム待ち時間（3〜10秒）
+    const randomTime = Math.random() * 7000 + 3000;
+
+    setTimeout(() => {
+      document.getElementById("message").textContent = "今！";
+
+      // 画面を光らせる
+      document.body.style.background = "#fff0f6";
+      setTimeout(() => {
+        document.body.style.background = "linear-gradient(135deg, #ffe6f2, #ffd6e8)";
+      }, 150);
+
+      startTime = Date.now();
+      ready = true;
+    }, randomTime);
+
+    // タップで反応速度を計測
+    document.addEventListener("click", () => {
+      if (!ready) return;
+
+      const reaction = Date.now() - startTime;
+
+      // 結果ページへ
+      location.href = "reflex_result.html?time=" + reaction;
+    });
+  </script>
+
+</body>
+</html>
