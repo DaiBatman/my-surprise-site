@@ -31,7 +31,7 @@
       animation: fadeIn 2s ease;
     }
 
-    button {
+    .btn {
       padding: 16px 32px;
       font-size: 24px;
       border: none;
@@ -40,9 +40,11 @@
       color: white;
       cursor: pointer;
       animation: pop 1s ease;
+      margin: 10px;
+      width: 260px;
     }
 
-    button:hover {
+    .btn:hover {
       background-color: #ff5599;
     }
 
@@ -74,11 +76,16 @@
 <body>
 
   <h1>やっほー！</h1>
-  <p>ここからサプライズゲームが始まるよ。</p>
+  <p>好きなゲームを選んでね。</p>
 
-  <!-- 次のページへ移動するボタン -->
-  <button onclick="location.href='game.html'">
-    ゲームをはじめる！
+  <!-- ゲーム1：ハートキャッチ -->
+  <button class="btn" onclick="location.href='game.html'">
+    ❤️ ハートキャッチ
+  </button>
+
+  <!-- ゲーム2：反射神経ゲーム -->
+  <button class="btn" onclick="location.href='reflex.html'">
+    ⚡ 反射神経チャレンジ
   </button>
 
   <script>
