@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Heart Game!</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      text-align: center;
+    }
+
+    #score {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    #timer {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .item {
+      position: fixed;
+      font-size: 40px;
+      cursor: pointer;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="score">Score: 0</div>
+  <div id="timer">Time: 15</div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 15;
+
+    function createItem() {
+      const item = document.createElement('div');
+      item.className = 'item';
+
+      // 爆弾30%、ハート70%
+      const isBomb = Math.random() < 0.3;
+      item.textContent = isBomb ? '💣' : '❤️';
+
+      item.style.left = Math.random() * 90 + 'vw';
+      item.style.top = '-40px';
+
+      item.onclick = () => {
+        if (isBomb) {
+          score -= 1;
+        } else {
+          score += 1;
+        }
+        document.getElementById('score').textContent = 'Score: ' + score;
+        item.remove();
+      };
+
+      document.body.appendChild(item);
+      setTimeout(() => item.remove(), 3000);
+    }
+
+    // ハート/爆弾を落とす
+    const itemInterval = setInterval(createItem, 700);
+
+    // タイマー
+    const timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timer').textContent = 'Time: ' + timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(itemInterval);
+        clearInterval(timerInterval);
+
+        // スコアを次のページへ渡す
+        location.href = 'result.html?score=' + score;
+      }
+    }, 1000);
+  </script>
+
+</body>
+</html>
