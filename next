@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Color Heart!</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 20px;
+      border-radius: 8px;
+      border: none;
+      background-color: #ff4d6d;
+      color: white;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+
+    .heart {
+      position: fixed;
+      font-size: 30px;
+      animation: fall 2s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>押すとハートの色が変わるよ！</h1>
+
+  <button onclick="dropHeart()">ここを押してね！</button>
+
+  <script>
+    function dropHeart() {
+      const h = document.createElement('div');
+      h.className = 'heart';
+
+      // ランダム色のハートを作る
+      const colors = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🩷'];
+      h.textContent = colors[Math.floor(Math.random() * colors.length)];
+
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.top = '-20px';
+      document.body.appendChild(h);
+
+      setTimeout(() => h.remove(), 2000);
+    }
+  </script>
+
+</body>
+</html>
