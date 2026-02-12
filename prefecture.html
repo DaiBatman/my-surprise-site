@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>都道府県シルエットクイズ</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffe6f2, #ffd6e8);
+      font-family: "Hiragino Maru Gothic ProN", sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #ff4d88;
+      margin-bottom: 10px;
+      animation: fadeIn 1.2s ease;
+    }
+
+    #question {
+      font-size: 22px;
+      color: #ff6699;
+      margin: 10px 0 20px;
+    }
+
+    #image-container {
+      width: 260px;
+      height: 260px;
+      background: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    #pref-image {
+      max-width: 90%;
+      max-height: 90%;
+      filter: brightness(0); /* 黒シルエット化（元画像が色付きでもOK） */
+    }
+
+    .option {
+      padding: 10px 20px;
+      margin: 6px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff66aa;
+      color: white;
+      cursor: pointer;
+      width: 260px;
+      animation: pop 0.8s ease;
+    }
+
+    .option:hover {
+      background-color: #ff5599;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #ff4d88;
+      min-height: 24px;
+    }
+
+    #progress {
+      margin-top: 6px;
+      font-size: 16px;
+      color: #ff6699;
+    }
+
+    #result {
+      font-size: 24px;
+      color: #ff4d88;
+      margin-top: 20px;
+    }
+
+    .btn-small {
+      margin-top: 16px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff66aa;
+      color: white;
+      cursor: pointer;
+      width: 220px;
+    }
+
+    .btn-small:hover {
+      background-color: #ff5599;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 背景ハート */
+    .heart {
+      position: fixed;
+      font-size: 22px;
+      color: #ff80aa;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh); }
+      to { transform: translateY(-10vh); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>都道府県シルエットクイズ</h1>
+  <div id="question">これは何県でしょう？</div>
+
+  <div id="image-container">
+    <img id="pref-image" src="" alt="都道府県シルエット">
+  </div>
+
+  <div id="options"></div>
+
+  <div id="status"></div>
+  <div id="progress"></div>
+  <div id="result"></div>
+
+  <button id="retry" class="btn-small" style="display:none;" onclick="startGame()">
+    もう一度遊ぶ
+  </button>
+  <button id="back" class="btn-small" style="display:none;" onclick="location.href='index.html'">
+    ゲーム選択画面に戻る
+  </button>
+
+  <script>
+    // 47都道府県リスト
+    const prefectures = [
+      "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県",
+      "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県",
+      "新潟県","富山県","石川県","福井県","山梨県","長野県",
+      "岐阜県","静岡県","愛知県","三重県",
+      "滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県",
+      "鳥取県","島根県","岡山県","広島県","山口県",
+      "徳島県","香川県","愛媛県","高知県",
+      "福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"
+    ];
+
+    // 画像ファイル名ルール：
+    // 例）pref_01.png, pref_02.png ... pref_47.png を img/ フォルダに置く想定
+    // 北海道 → pref_01.png, 青森県 → pref_02.png ... 沖縄県 → pref_47.png
+    function getImagePath(index) {
+      const num = String(index + 1).padStart(2, "0");
+      return "img/pref_" + num + ".png";
+    }
+
+    const TOTAL_QUESTIONS = 5;
+    let questionCount = 0;
+    let score = 0;
+    let currentAnswer = "";
+
+    const imageEl = document.getElementById("pref-image");
+    const optionsEl = document.getElementById("options");
+    const statusEl = document.getElementById("status");
+    const progressEl = document.getElementById("progress");
+    const resultEl = document.getElementById("result");
+    const retryBtn = document.getElementById("retry");
+    const backBtn = document.getElementById("back");
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function pickRandomPrefIndexes(count) {
+      const indexes = [...prefectures.keys()];
+      shuffle(indexes);
+      return indexes.slice(0, count);
+    }
+
+    function setQuestion() {
+      questionCount++;
+      statusEl.textContent = "";
+      resultEl.textContent = "";
+      retryBtn.style.display = "none";
+      backBtn.style.display = "none";
+
+      progressEl.textContent = questionCount + " / " + TOTAL_QUESTIONS + " 問目";
+
+      // 4つの候補インデックスを取得
+      const idxs = pickRandomPrefIndexes(4);
+      const answerIndex = idxs[0]; // 先頭を正解に
+      currentAnswer = prefectures[answerIndex];
+
+      // 画像セット
+      imageEl.src = getImagePath(answerIndex);
+
+      // 選択肢をシャッフルして表示
+      const names = idxs.map(i => prefectures[i]);
+      shuffle(names);
+
+      optionsEl.innerHTML = "";
+      names.forEach(name => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = name;
+        btn.onclick = () => selectAnswer(name);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selected) {
+      const buttons = document.querySelectorAll(".option");
+      buttons.forEach(b => b.disabled = true);
+
+      if (selected === currentAnswer) {
+        statusEl.textContent = "正解！";
+        score++;
+      } else {
+        statusEl.textContent = "ざんねん… 正解は「" + currentAnswer + "」";
+      }
+
+      if (questionCount >= TOTAL_QUESTIONS) {
+        // 終了
+        resultEl.textContent = "結果： " + score + " / " + TOTAL_QUESTIONS + " 問正解！";
+        retryBtn.style.display = "inline-block";
+        backBtn.style.display = "inline-block";
+      } else {
+        // 少し待って次の問題へ
+        setTimeout(setQuestion, 1200);
+      }
+    }
+
+    function startGame() {
+      questionCount = 0;
+      score = 0;
+      optionsEl.innerHTML = "";
+      statusEl.textContent = "";
+      resultEl.textContent = "";
+      retryBtn.style.display = "none";
+      backBtn.style.display = "none";
+      setQuestion();
+    }
+
+    // 背景ハート
+    function createHeart() {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = "❤️";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.bottom = "-20px";
+      h.style.fontSize = (Math.random() * 20 + 20) + "px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 6000);
+    }
+    setInterval(createHeart, 500);
+
+    // ゲーム開始
+    startGame();
+  </script>
+
+</body>
+</html>
