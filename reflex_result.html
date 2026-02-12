@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Reflex Result!</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: "Hiragino Maru Gothic ProN", sans-serif;
+      background: linear-gradient(135deg, #ffe6f2, #ffd6e8);
+      height: 100vh;
+      margin: 0;
+      padding-top: 80px;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 42px;
+      color: #ff4d88;
+      animation: fadeIn 1.2s ease;
+    }
+
+    #time {
+      font-size: 34px;
+      color: #ff6699;
+      margin-top: 20px;
+      font-weight: bold;
+      animation: pop 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ボタン */
+    .btn {
+      margin-top: 30px;
+      padding: 14px 28px;
+      font-size: 22px;
+      border: none;
+      border-radius: 12px;
+      background-color: #ff66aa;
+      color: white;
+      cursor: pointer;
+      width: 260px;
+      animation: fadeIn 1.5s ease;
+    }
+
+    .btn:hover {
+      background-color: #ff5599;
+    }
+
+    /* 背景のハート */
+    .heart {
+      position: fixed;
+      font-size: 26px;
+      color: #ff80aa;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh); }
+      to { transform: translateY(-10vh); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>反射神経の結果！</h1>
+  <div id="time"></div>
+
+  <button class="btn" onclick="location.href='reflex.html'">もう一回挑戦する！</button>
+  <button class="btn" onclick="location.href='index.html'">トップに戻る</button>
+
+  <script>
+    // URL から time を取得
+    const params = new URLSearchParams(window.location.search);
+    const time = params.get("time");
+
+    document.getElementById("time").textContent =
+      "あなたの反応速度は " + time + " ms！";
+
+    // 背景にハートをふわふわ浮かせる
+    function createHeart() {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = "❤️";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.bottom = "-20px";
+      h.style.fontSize = (Math.random() * 20 + 20) + "px";
+      document.body.appendChild(h);
+
+      setTimeout(() => h.remove(), 6000);
+    }
+
+    setInterval(createHeart, 400);
+  </script>
+
+</body>
+</html>
