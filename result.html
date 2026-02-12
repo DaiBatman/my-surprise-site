@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Result!</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: "Hiragino Maru Gothic ProN", sans-serif;
+      background: linear-gradient(135deg, #ffe6f2, #ffd6e8);
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding-top: 60px;
+    }
+
+    h1 {
+      font-size: 40px;
+      color: #ff4d88;
+      margin-bottom: 10px;
+      animation: fadeIn 1.5s ease;
+    }
+
+    #score {
+      font-size: 32px;
+      color: #ff6699;
+      font-weight: bold;
+      animation: pop 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 背景のハート */
+    .heart {
+      position: fixed;
+      font-size: 24px;
+      color: #ff80aa;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh); }
+      to { transform: translateY(-10vh); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ゲーム結果だよ！</h1>
+  <h2 id="score"></h2>
+
+  <script>
+    // URL から score を取得
+    const params = new URLSearchParams(window.location.search);
+    const score = params.get('score');
+    document.getElementById('score').textContent = 'あなたのスコアは ' + score + ' 点！';
+
+    // 背景にハートをふわふわ浮かせる
+    function createHeart() {
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = '❤️';
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.bottom = '-20px';
+      h.style.fontSize = (Math.random() * 20 + 20) + 'px';
+      document.body.appendChild(h);
+
+      setTimeout(() => h.remove(), 6000);
+    }
+
+    setInterval(createHeart, 500);
+  </script>
+<!-- 再挑戦ボタン -->
+<button id="retry" onclick="location.href='game.html'">
+  もう一回挑戦する！
+</button>
+
+<style>
+  #retry {
+    margin-top: 40px;
+    padding: 12px 24px;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ff66aa;
+    color: white;
+    cursor: pointer;
+    animation: fadeIn 1.5s ease;
+  }
+
+  #retry:hover {
+    background-color: #ff5599;
+  }
+</style>
+
+</body>
+</html>
